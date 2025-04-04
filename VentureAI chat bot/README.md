@@ -21,9 +21,6 @@ Try it here: [VentureAI on Hugging Face](https://huggingface.co/spaces/key-life/
 - `README.md` – Project documentation  
 - `colab.pdf` – Colab notebook export (Colab link is not in GitHub due to different accounts)  
 
-## How to Run  
 
-1. Clone the repository  
-```bash
-git clone https://huggingface.co/spaces/key-life/VentureAI
-cd VentureAI
+
+
