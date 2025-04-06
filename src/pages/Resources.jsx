@@ -1,4 +1,3 @@
-// src/pages/Resources.jsx
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
@@ -8,6 +7,25 @@ import ResourceCard from '../components/ResourceCard';
 import React from 'react';
 
 // Mock data for resources
+
+const resourceListVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      when: "beforeChildren",
+      staggerChildren: 0.1, // Add stagger to ensure smooth appearance of items
+      duration: 0.7, // Timing for the overall animation
+      ease: "easeOut",
+    },
+  },
+};
+
+
 const resourcesData = [
   {
     id: 1,
@@ -73,39 +91,38 @@ const categories = [
 // Animation variants
 const pageVariants = {
   initial: {
-    opacity: 0
+    opacity: 0,
+    scale: 0.98,
   },
   animate: {
     opacity: 1,
+    scale: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.7,
       ease: "easeOut",
-      when: "beforeChildren",
-      staggerChildren: 0.2
-    }
-  }
+    },
+  },
 };
 
 const itemVariants = {
   initial: {
+    opacity: 0,
     y: 20,
-    opacity: 0
   },
   animate: {
-    y: 0,
     opacity: 1,
+    y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const Resources = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // References for scroll animations
   const headerRef = useRef(null);
   const searchRef = useRef(null);
   const resultsRef = useRef(null);
@@ -117,27 +134,12 @@ const Resources = () => {
   const resultsInView = useInView(resultsRef, { once: true, amount: 0.1 });
   const calloutInView = useInView(calloutRef, { once: true, amount: 0.5 });
   
-  // Filter resources based on category and search term
   const filteredResources = resourcesData.filter((resource) => {
     const matchesCategory = selectedCategory === 'All' || resource.category === selectedCategory;
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          resource.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
-  // Animation for filtered resources
-  const resourceListVariants = {
-    initial: {
-      opacity: 0
-    },
-    animate: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
-  };
 
   return (
     <motion.div 
@@ -183,12 +185,11 @@ const Resources = () => {
           
           {/* Search and Filter with animation */}
           <motion.div 
-            className="mb-12 bg-gray-50 p-8 rounded-2xl shadow-sm"
+            className="mb-12 bg-blue-500 p-8 rounded-2xl shadow-sm"
             ref={searchRef}
             initial={{ opacity: 0, y: 20 }}
             animate={searchInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7 }}
-            whileHover={{ boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
           >
             <div className="flex flex-col md:flex-row gap-6">
               <motion.div 
@@ -197,30 +198,17 @@ const Resources = () => {
                 animate={searchInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
-                <label htmlFor="search" className="block text-sm font-semibold text-gray-700 mb-2">Search Resources</label>
-                <div className="relative">
-                  <motion.input
-                    whileFocus={{ scale: 1.01 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    type="text"
-                    id="search"
-                    placeholder="Search by keywords..."
-                    className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <motion.svg 
-                      className="h-6 w-6 text-gray-400" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                      whileHover={{ scale: 1.2, rotate: 5 }}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </motion.svg>
-                  </div>
-                </div>
+                <label htmlFor="search" className="block text-sm font-semibold text-white mb-2">Search Resources</label>
+                <motion.input
+                  whileFocus={{ scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  type="text"
+                  id="search"
+                  placeholder="Search by keywords..."
+                  className="block w-full rounded-lg border-gray-300 text-white border- focus:border-blue-500 focus:ring-blue-500 p-3 outline-none shadow-sm text-lg"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </motion.div>
               
               <motion.div 
@@ -229,12 +217,12 @@ const Resources = () => {
                 animate={searchInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-2">Filter by Category</label>
+                <label htmlFor="category" className="block text-sm font-semibold text-white mb-2">Filter by Category</label>
                 <motion.select
                   whileFocus={{ scale: 1.01 }}
                   transition={{ type: "spring", stiffness: 300 }}
                   id="category"
-                  className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+                  className="block w-full rounded-lg border-gray-300 text-white bg-blue-500 focus:border-blue-500 focus:ring-blue-500 p-3 outline-none shadow-sm text-lg"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
@@ -268,7 +256,7 @@ const Resources = () => {
               variants={resourceListVariants}
               initial="initial"
               animate={resultsInView ? "animate" : "initial"}
-              key={selectedCategory + searchTerm}  // This forces re-render of animation when filters change
+              key={selectedCategory + searchTerm}
             >
               {filteredResources.map((resource, index) => (
                 <motion.div

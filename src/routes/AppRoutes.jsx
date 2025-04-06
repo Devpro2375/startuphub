@@ -10,6 +10,8 @@ import Events from '../pages/Events';
 import Feedback from '../pages/Feedback';
 import React from 'react'
 import ResourceDetails from '../pages/ResourceDetails';
+import Login from '../pages/Login';
+import Signup from '../pages/Signup';
 
 
 const AppRoutes = () => {
@@ -17,6 +19,8 @@ const AppRoutes = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:id" element={<ResourceDetails />} />
         <Route path="/startups" element={<Startups />} />

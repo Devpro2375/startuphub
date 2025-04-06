@@ -133,7 +133,7 @@ const Home = () => {
       
       <main className="flex-grow">
         {/* Hero Section with Animations */}
-        <section className="bg-gradient-to-r from-blue-50 to-blue-100 text-gray-900">
+        <section className=" text-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-36">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -231,14 +231,11 @@ const Home = () => {
                     delay: index * 0.1, 
                     duration: 0.5 
                   }}
-                  whileHover={{ 
-                    y: -5, 
-                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" 
-                  }}
+             
                 >
                   <Link 
                     to={feature.path}
-                    className="bg-white rounded-xl shadow-md h-full transition-shadow p-8 flex flex-col items-center text-center border border-gray-200"
+                    className="bg-white rounded-xl h-full  hover:bg-blue-100  duration-300 p-8 flex flex-col items-center text-center border border-gray-200"
                   >
                     <motion.div 
                       className="bg-blue-100 text-blue-600 p-4 rounded-full mb-6"
@@ -259,7 +256,7 @@ const Home = () => {
         </section>
         
         {/* Stats Section with Counter Animations */}
-        <section className="py-20 bg-blue-50" ref={statsRef}>
+        <section className="py-20" ref={statsRef}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
               className="text-center mb-16"

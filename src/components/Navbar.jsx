@@ -18,15 +18,16 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-200">
+    <nav className="bg-white sticky top-0 z-50  border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="ml-2 text-xl font-bold text-gray-900">
-                StartupHub
-              </span>
-            </Link>
+              <Link to="/" className="flex-shrink-0 flex items-center">
+                <span className="ml-2  w-36 pt-1 ">
+                <img src="/logo.png" alt="Startup Incubator Logo" />
+
+                </span>
+              </Link>
 
             {/* Desktop Nav Links */}
             <div className="hidden md:ml-6 md:flex md:space-x-6">

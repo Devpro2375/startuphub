@@ -1,14 +1,9 @@
-
-
 import { useState, useRef, useEffect } from 'react';
-
-import { motion  , AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
-// Import Lottie for more complex animations
 import Lottie from 'react-lottie-player';
-// We'll use these animation JSONs (you'll need to download these)
 import robotIdleAnimation from '../assets/animations/Animation - 1742058716674.json';
-
+import axios from 'axios'; // Import axios for API requests
 
 const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +16,7 @@ const AIAssistant = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
-  const [robotState, setRobotState] = useState('idle'); // 'idle', 'talking', 'thinking', 'wave'
+  const [robotState, setRobotState] = useState('idle');
   const [showAssistantButton, setShowAssistantButton] = useState(false);
   
   // Show the assistant button after a delay
@@ -36,14 +31,6 @@ const AIAssistant = () => {
     
     return () => clearTimeout(timer);
   }, []);
-  
-  // Suggestions with emoji themes
-  const suggestions = [
-    { text: "Find government schemes", icon: "🏛️" },
-    { text: "Connect with investors", icon: "💰" },
-    { text: "How to create a pitch deck", icon: "📊" },
-    { text: "Discover startup events", icon: "🎪" }
-  ];
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -53,90 +40,37 @@ const AIAssistant = () => {
   }, [messages]);
 
   // Handle sending a new message
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     
-    // Add user message to chat
+    // Add user message to the chat
     setMessages(prev => [...prev, { text: input, sender: 'user' }]);
     setInput('');
-    
-    // Simulate AI thinking
     setIsTyping(true);
     setRobotState('thinking');
-    
-    // Simulate AI response (in a real app, this would call your AI API)
-    setTimeout(() => {
+
+    try {
+      // Send POST request to Python FastAPI backend
+      const response = await axios.post('http://localhost:8000/chat', {
+        message: input,
+        history: messages,
+        system_message: "You are a friendly AI assistant.",
+        max_tokens: 512,
+        temperature: 0.7,
+        top_p: 0.95,
+      });
+
+      // Set the response and AI state
       setIsTyping(false);
       setRobotState('talking');
-      setMessages(prev => [
-        ...prev, 
-        { 
-          text: generateResponse(input), 
-          sender: 'ai'
-        }
-      ]);
-      
-      // Return to idle state after "speaking"
+      setMessages(prev => [...prev, { text: response.data.response, sender: 'ai' }]);
+
       setTimeout(() => setRobotState('idle'), 1500);
-    }, 1500);
-  };
-
-  // Generate response based on input
-  const generateResponse = (userInput) => {
-    const input = userInput.toLowerCase();
-    
-    if (input.includes('investor') || input.includes('funding')) {
-      return "Our investor directory has 500+ active investors. Would you like me to help you filter them based on your industry or funding stage?";
-    } else if (input.includes('government') || input.includes('scheme') || input.includes('grant')) {
-      return "StartupHub has information on 100+ government schemes. You can explore them in the Resources section, or I can help you find ones specific to your needs.";
-    } else if (input.includes('pitch') || input.includes('deck')) {
-      return "Our Pitch Desk tool can help you create a professional pitch deck with AI-powered feedback. Would you like to try it now?";
-    } else if (input.includes('event') || input.includes('workshop')) {
-      return "We have several upcoming events for startups. You can view the full calendar in the Events section. Any particular type of event you're looking for?";
-    } else if (input.includes('hello') || input.includes('hi')) {
-      return "Hello! I'm your AI assistant for navigating StartupHub. What are you looking to accomplish today?";
-    } else {
-      return "Thanks for your question. I can help you with finding resources, connecting with investors, creating pitch decks, and discovering events. Could you provide more details about what you need?";
-    }
-  };
-
-  // Handle clicking a suggestion button
-  const handleSuggestionClick = (suggestion) => {
-    setMessages(prev => [...prev, { text: suggestion.text, sender: 'user' }]);
-    
-    // Simulate AI thinking
-    setIsTyping(true);
-    setRobotState('thinking');
-    
-    // Simulate AI response
-    setTimeout(() => {
+    } catch (error) {
+      console.error('Error sending message to AI:', error);
       setIsTyping(false);
-      setRobotState('talking');
-      setMessages(prev => [
-        ...prev, 
-        { 
-          text: generateResponse(suggestion.text), 
-          sender: 'ai'
-        }
-      ]);
-      
-      // Return to idle state after "speaking"
-      setTimeout(() => setRobotState('idle'), 1500);
-    }, 1500);
-  };
-
-  // Get the appropriate robot animation based on state
-  const getRobotAnimation = () => {
-    switch (robotState) {
-      case 'talking':
-        return console.log('wave');
-      case 'thinking':
-        return console.log('wave');
-      case 'wave':
-        return console.log('wave');
-      default:
-        return robotIdleAnimation;
+      setRobotState('idle');
     }
   };
 
@@ -187,7 +121,7 @@ const AIAssistant = () => {
             >
               <Lottie
                 loop
-                animationData={getRobotAnimation()}
+                animationData={robotIdleAnimation}
                 play
                 style={{ width: 120, height: 120 }}
               />
@@ -234,7 +168,7 @@ const AIAssistant = () => {
                 <div className="w-12 h-12 mr-3 relative">
                   <Lottie
                     loop={robotState === 'idle' || robotState === 'talking'}
-                    animationData={getRobotAnimation()}
+                    animationData={robotIdleAnimation}
                     play
                     style={{ width: 60, height: 60 }}
                   />
@@ -267,7 +201,7 @@ const AIAssistant = () => {
               </motion.button>
             </motion.div>
             
-            {/* Chat messages with improved animation */}
+            {/* Chat messages */}
             <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
               {messages.map((message, index) => (
                 <motion.div
@@ -309,7 +243,7 @@ const AIAssistant = () => {
                 </motion.div>
               ))}
               
-              {/* AI typing indicator with character */}
+              {/* AI typing indicator */}
               {isTyping && (
                 <motion.div
                   className="flex mb-4 justify-start items-end"
@@ -319,7 +253,6 @@ const AIAssistant = () => {
                   <motion.div className="w-8 h-8 mr-2 mb-1">
                     <Lottie
                       loop={true}
-             
                       play
                       style={{ width: 40, height: 40 }}
                     />
@@ -349,69 +282,24 @@ const AIAssistant = () => {
               <div ref={messagesEndRef} />
             </div>
             
-            {/* Suggestion chips with icons */}
-            <div className="px-4 py-2 border-t border-gray-200 flex gap-2 overflow-x-auto">
-              {suggestions.map((suggestion, index) => (
-                <motion.button
-                  key={index}
-                  className="whitespace-nowrap py-1 px-3 bg-blue-50 text-blue-600 rounded-full text-sm border border-blue-100 hover:bg-blue-100 transition flex items-center"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  whileHover={{ scale: 1.05, backgroundColor: "#dbeafe" }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ 
-                    delay: 0.1 * index,
-                    type: "spring",
-                    stiffness: 200
-                  }}
-                >
-                  <span className="mr-1">{suggestion.icon}</span>
-                  {suggestion.text}
-                </motion.button>
-              ))}
-            </div>
-            
-            {/* Message input with animated focus state */}
+            {/* Message input */}
             <form 
               onSubmit={handleSendMessage}
               className="px-4 py-3 border-t border-gray-200 flex items-center"
             >
-              <motion.div 
-                className="flex-grow relative"
-                initial={false}
-                whileFocus={{ scale: 1.02 }}
-              >
-                <motion.input
-                  type="text"
-                  placeholder="Type your message..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                {input.length === 0 && (
-                  <motion.div 
-                    className="absolute right-3 top-2.5 text-gray-400"
-                    initial={{ opacity: 0.5 }}
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                  </motion.div>
-                )}
-              </motion.div>
+              <motion.input
+                type="text"
+                placeholder="Type your message..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
               <motion.button
                 type="submit"
                 className="ml-2 bg-blue-600 text-white rounded-full p-2"
                 whileHover={{ scale: 1.1, backgroundColor: "#2563eb" }}
                 whileTap={{ scale: 0.9, rotate: 15 }}
                 disabled={!input.trim()}
-                animate={input.trim() ? 
-                  { scale: [1, 1.05, 1], transition: { duration: 2, repeat: Infinity, repeatType: "mirror" }} 
-                  : { scale: 1 }
-                }
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
